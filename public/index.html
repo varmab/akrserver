@@ -41,6 +41,7 @@
 			<section id="banner">
 				<div class="inner">
 					<h2>Home</h2>
+					<ul id="books"></ul>
 					<p>Sed lorem ipsum sed dolor nullam adipiscing</p>
 					<ul class="actions">
 						<li><a href="#one" class="button big scrolly">Learn More</a></li>
@@ -225,3 +226,19 @@
 
 	</body>
 </html>
+<script>
+
+	$.ajax({
+		url:'/api/books',
+		method:"GET",
+		success:function(books){
+			books.forEach((book)=>{
+				$("#books").append("<li>" +  book.title + "</li>")
+			})
+		},
+		error:function(err){
+			console.log(err)
+		}
+	})
+
+</script>
