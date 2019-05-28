@@ -22,8 +22,22 @@ router.route("/")
     })
     .post((req,res)=>{
         var newBook=req.body;
-        books.push(newBook);
-        res.send(books);
+
+        var connection = mysql.createConnection({
+            host     : "localhost",
+            user     : "root",
+            password : "4emc9122",
+            database : "training"
+          });
+          connection.connect();
+ 
+          connection.query(`INSERT INTO Books(title,author) VALUES('${newBook.title}','${newBook.author}')`, 
+                            function (error, book, fields) {
+            if (error) throw error;
+            res.send(book)
+          });
+           
+          connection.end();
     })
 
 router.route("/:id")
