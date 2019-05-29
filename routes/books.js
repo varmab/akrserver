@@ -2,13 +2,15 @@ var express=require('express')
 var router=express.Router();
 var mysql=require("mysql")
 
+require('dotenv').config()
+
 router.route("/")
     .get((req,res)=>{
         var connection = mysql.createConnection({
-            host     : "localhost",
-            user     : "root",
-            password : "4emc9122",
-            database : "training"
+            host     : process.env.DB_HOST,
+            user     : process.env.DB_USER,
+            password : process.env.DB_PASSWORD,
+            database : process.env.DB_NAME
           });
           connection.connect();
  
@@ -24,11 +26,12 @@ router.route("/")
         var newBook=req.body;
 
         var connection = mysql.createConnection({
-            host     : "localhost",
-            user     : "root",
-            password : "4emc9122",
-            database : "training"
+            host     : process.env.DB_HOST,
+            user     : process.env.DB_USER,
+            password : process.env.DB_PASSWORD,
+            database : process.env.DB_NAME
           });
+
           connection.connect();
  
           connection.query(`INSERT INTO Books(title,author) VALUES('${newBook.title}','${newBook.author}')`, 
@@ -43,20 +46,77 @@ router.route("/")
 router.route("/:id")
     .put((req,res)=>{
         var id=req.params.id;
-        var bookToBeupdated=books.filter((book)=>{
-            return book.id==id
-        })
-        bookToBeupdated[0].title="Oracle Pro"
-        res.send(bookToBeupdated)
+        var newBook=req.body;
+
+        var connection = mysql.createConnection({
+            host     : process.env.DB_HOST,
+            user     : process.env.DB_USER,
+            password : process.env.DB_PASSWORD,
+            database : process.env.DB_NAME
+          });
+          
+          connection.connect();
+ 
+          connection.query(`
+            UPDATE Books
+            SET title='${newBook.title}',
+                author='${newBook.author}'
+            WHERE id=${id}
+          `, 
+            function (error, book, fields) {
+            if (error) throw error;
+            res.send(book)
+          });
+           
+          connection.end();
     })
     .delete((req,res)=>{
         var id=req.params.id;
+        
+        var connection = mysql.createConnection({
+            host     : process.env.DB_HOST,
+            user     : process.env.DB_USER,
+            password : process.env.DB_PASSWORD,
+            database : process.env.DB_NAME
+          });
+          
+          connection.connect();
+ 
+          connection.query(`
+            DELETE FROM Books
+            WHERE id=${id}
+          `, 
+            function (error, book, fields) {
+            if (error) throw error;
+            res.send(book)
+          });
+           
+          connection.end();
+    })
 
-        var latestBooks=books.filter((book)=>{
-            return book.id!=id
-        })
+router.route("/search/:keyword")
+    .get((req,res)=>{
+        var keyword=req.params.keyword;
 
-        res.send(latestBooks)
+        var connection = mysql.createConnection({
+            host     : process.env.DB_HOST,
+            user     : process.env.DB_USER,
+            password : process.env.DB_PASSWORD,
+            database : process.env.DB_NAME
+          });
+          
+          connection.connect();
+ 
+          connection.query(`
+            SELECT * FROM Books
+            WHERE title LIKE '%${keyword}%'
+          `, 
+            function (error, book, fields) {
+            if (error) throw error;
+            res.send(book)
+          });
+           
+          connection.end();
     })
 
 module.exports=router;
