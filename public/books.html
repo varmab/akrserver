@@ -94,7 +94,7 @@
 			url:'/api/books/' + id,
 			method:'DELETE',
 			success:function(book){
-			x	alert('Book is deleted successfully')
+				alert('Book is deleted successfully')
 				window.location.href="/books"
 			},
 			error:function(err){
@@ -121,6 +121,9 @@
 
 	$.ajax({
 		url:'/api/books',
+		beforeSend: function (xhr) {
+    		xhr.setRequestHeader('Authorization', 'Bearer YWtyaXZpYTpwYXNzMTIzNA=='); // akrivia:pass1234
+		},
 		success:function(books){
 			console.log(books)
 			books.forEach(function(book){
